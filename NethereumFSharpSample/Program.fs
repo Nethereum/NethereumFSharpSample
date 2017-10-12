@@ -26,14 +26,8 @@ let main argv =
   let bin = "0x606060405260405160208060de833981016040528080519060200190919050505b806000600050819055505b5060a68060386000396000f360606040526000357c010000000000000000000000000000000000000000000000000000000090048063c6888fa1146037576035565b005b604b60048080359060200190919050506061565b6040518082815260200191505060405180910390f35b6000817f61aa1562c4ed1a53026a57ad595b672e1b7c648166127b904365b44401821b7960405180905060405180910390a26000600050548202905060a1565b91905056"
   let abi =  @"[{""constant"":false,""inputs"":[{""name"":""a"",""type"":""uint256""}],""name"":""multiply"",""outputs"":[{""name"":""d"",""type"":""uint256""}],""type"":""function""},{""inputs"":[{""name"":""multiplier"",""type"":""uint256""}],""type"":""constructor""},{""anonymous"":false,""inputs"":[{""indexed"":true,""name"":""a"",""type"":""uint256""}],""name"":""Multiplied"",""type"":""event""}]"
   
-  let contractReceipt = 
-    Async.RunSynchronously(
-            async {
-                let! receipt =  web3.Eth.DeployContract.SendRequestAndWaitForReceiptAsync(abi, bin, sender, HexBigInteger(Numerics.BigInteger(900000)), null, 7)
-                return receipt;
-            }
-    )
-
+  let contractReceipt =  web3.Eth.DeployContract.SendRequestAndWaitForReceiptAsync(abi, bin, sender, HexBigInteger(Numerics.BigInteger(900000)), null, 7).Result
+ 
   let contractAddress = contractReceipt.ContractAddress
   let contract = web3.Eth.GetContract(abi, contractAddress)
 
