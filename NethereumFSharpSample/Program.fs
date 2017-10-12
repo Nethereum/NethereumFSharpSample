@@ -1,4 +1,4 @@
-﻿open Nethereum.Web3
+open Nethereum.Web3
 open Nethereum.Web3.Accounts.Managed
 open Nethereum.Hex.HexTypes
 open System
@@ -41,41 +41,25 @@ let main argv =
 
   let multiplyFunc = contract.GetFunction("multiply")
   let multiplyEvent = contract.GetEvent("Multiplied")
-  let filterAll = 
-    Async.RunSynchronously(
-            async {
-                let! filter = multiplyEvent.CreateFilterAsync()
-                return filter;
-            }
-    )
+  let filterAll = multiplyEvent.CreateFilterAsync().Result
 
   printfn "filter id created: %A" filterAll.Value
 
   let multiplyReceipt = 
-     Async.RunSynchronously(
-            async {
-                let! receipt =
                     multiplyFunc.SendTransactionAndWaitForReceiptAsync(
                     sender,
                     HexBigInteger(Numerics.BigInteger(4700000)),
                     null,
                     null,
-                    7)
-               return receipt
-            }
-   )
+                    7).Result
+                  
   
   let decodedLog = multiplyEvent.DecodeAllEventsForEvent<MultipliedEvent>(multiplyReceipt.Logs);
 
   printfn "receipt log event value of A (multiplied value): %A" (decodedLog.Item(0).Event.A)
 
-  let eventLogs = 
-    Async.RunSynchronously(
-            async {
-               let! logs = multiplyEvent.GetFilterChanges<MultipliedEvent>(filterAll)
-               return logs
-            }
-    )   
+  let eventLogs =  multiplyEvent.GetFilterChanges<MultipliedEvent>(filterAll).Result
+ 
  
   printfn "event log event value of A (multiplied value): %A" (eventLogs.Item(0).Event.A)
 
